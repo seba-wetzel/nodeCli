@@ -1,7 +1,9 @@
 var fs = require("fs");
 
-const date = () => console.log(new Date());
-
+const date = () => {
+  let str = new Date();
+  process.stdout.write(`${str}`);
+};
 const ls = async (path = "./") => {
   const dir = await fs.promises.opendir(path);
   for await (const dirent of dir) {
@@ -49,4 +51,5 @@ module.exports = {
   cat,
   head,
   tail,
+  //curl,
 };
