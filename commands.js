@@ -1,57 +1,73 @@
-var fs = require("fs");
+const fs = require("fs");
+const path = require('path')
+const request = require('request');
 
-const date = () => {
+const date = (arg, done) => {
   let str = new Date();
-  process.stdout.write(`${str}`);
+  done(`${str}`);
 };
 
-const ls = async (path = "./") => {
-  const dir = await fs.promises.opendir(path);
+const ls = async (dirfolder = "./", done) => {
+  const dir = await fs.promises.opendir(dirfolder);
   for await (const dirent of dir) {
-    console.log(dirent.name);
+    done(dirent.name);
   }
 };
 
-const pwd = () => process.stdout.write(process.env.PWD);
+const pwd = (arg, done) => done(process.env.PWD);
 
-const echo = (str) => {
+const echo = (str, done) => {
   str = str.slice(1).join(" ");
   if (str.includes("$")) {
-    process.stdout.write(process.env[str.slice(1)]);
+    done(process.env[str.slice(1)]);
     return;
   }
-  process.stdout.write(str)
+  done(str)
 };
 
-const cat = (filename, print = true) => {
+const cat = (filename, done, print = true) => {
   let file = fs.readFileSync(filename, "utf-8");
-  if (print) process.stdout.write(file);
+  if (print) done(file);
   return file;
 };
 
-const head = (filename) => {
-  let file = cat(filename, false).split("\n").slice(0, 10).join("\n");
-  process.stdout.write(file);
+const head = (filename, done) => {
+  let file = cat(filename, null, false).split("\n").slice(0, 10).join("\n");
+  done(file);
 };
-const sort = (filename) => {
-  let file = cat(filename, false).split("\n").sort().join("\n")
-  process.stdout.write(file)
+const sort = (filename, done) => {
+  let file = cat(filename, null, false).split("\n").sort().join("\n")
+  done(file)
 }
 
-const tail = (filename) => {
-  let file = cat(filename, false).split("\n").slice(-10).join("\n");
-  process.stdout.write(file);
+const tail = (filename, done) => {
+  let file = cat(filename, null, false).split("\n").slice(-10).join("\n");
+  done(file);
 };
 
-const wc = (filename) => {
-  let file = cat(filename, false).split("\n").length
-  process.stdout.write(`${file}`);
+const wc = (filename, done) => {
+  let file = cat(filename, null, false).split("\n").length
+  done(`${file}`);
 }
 
-const uniq = (filename) => {
-  let file = cat(filename, false).split("\n")
+const uniq = (filename, done) => {
+  let file = cat(filename, null, false).split("\n")
   let unico = [...new Set(file)].join("\n")
-  process.stdout.write(`${unico}`);
+  done(`${unico}`);
+}
+
+const curl = (url, done) => {
+  request(`http://${url}`, function (error, response, body) {
+    if (error) console.log(error);
+    done(`${body}`);
+  });
+}
+
+const find = (filename, done) => {
+  ls('./', (file) => {
+    file = path.resolve('./', file);
+    console.log(file)
+  })
 }
 
 module.exports = {
@@ -62,8 +78,9 @@ module.exports = {
   cat,
   head,
   tail,
-  //curl,
+  curl,
   sort,
   wc,
-  uniq
+  uniq,
+  find
 };
