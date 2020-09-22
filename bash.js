@@ -3,12 +3,15 @@ const done = result => {
   process.stdout.write(`${result}`)
   process.stdout.write("\nprompt > ");
 }
+const doneLogOut = result => {
+  process.stdout.write(`${result}`)
+  process.stdout.write("\n");
+  process.exit();
+}
 
 
 if (process.argv.length > 2) {
-  dispatch(process.argv.slice(2));
-  process.stdout.write("\n");
-  process.exit();
+  dispatch(process.argv.slice(2), doneLogOut);
 }
 
 // Output un prompt

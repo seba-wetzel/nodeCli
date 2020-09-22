@@ -58,7 +58,7 @@ const uniq = (filename, done) => {
 
 const curl = (url, done) => {
   request(`http://${url}`, function (error, response, body) {
-    if (error) console.log(error);
+    if (error) throw error;
     done(`${body}`);
   });
 }
