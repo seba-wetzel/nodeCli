@@ -4,6 +4,7 @@ const date = () => {
   let str = new Date();
   process.stdout.write(`${str}`);
 };
+
 const ls = async (path = "./") => {
   const dir = await fs.promises.opendir(path);
   for await (const dirent of dir) {
@@ -11,37 +12,47 @@ const ls = async (path = "./") => {
   }
 };
 
-const pwd = () => console.log(process.env.PWD);
+const pwd = () => process.stdout.write(process.env.PWD);
 
 const echo = (str) => {
   str = str.slice(1).join(" ");
-
   if (str.includes("$")) {
-    let env = str.slice(1);
-    process.stdout.write(process.env[env]);
+    process.stdout.write(process.env[str.slice(1)]);
     return;
   }
-  console.log(str);
+  process.stdout.write(str)
 };
 
 const cat = (filename, print = true) => {
-  //console.log(filename);
   let file = fs.readFileSync(filename, "utf-8");
   if (print) process.stdout.write(file);
   return file;
 };
 
 const head = (filename) => {
-  let file = cat(filename, false);
-  file = file.split("\n").slice(0, 10).join("\n");
+  let file = cat(filename, false).split("\n").slice(0, 10).join("\n");
+  process.stdout.write(file);
+};
+const sort = (filename) => {
+  let file = cat(filename, false).split("\n").sort().join("\n")
+  process.stdout.write(file)
+}
+
+const tail = (filename) => {
+  let file = cat(filename, false).split("\n").slice(-10).join("\n");
   process.stdout.write(file);
 };
 
-const tail = (filename) => {
-  let file = cat(filename, false);
-  file = file.split("\n").slice(-10).join("\n");
-  process.stdout.write(file);
-};
+const wc = (filename) => {
+  let file = cat(filename, false).split("\n").length
+  process.stdout.write(`${file}`);
+}
+
+const uniq = (filename) => {
+  let file = cat(filename, false).split("\n")
+  let unico = [...new Set(file)].join("\n")
+  process.stdout.write(`${unico}`);
+}
 
 module.exports = {
   date,
@@ -52,4 +63,7 @@ module.exports = {
   head,
   tail,
   //curl,
+  sort,
+  wc,
+  uniq
 };

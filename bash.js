@@ -2,6 +2,7 @@ const { dispatch } = require("./dispath");
 
 if (process.argv.length > 2) {
   dispatch(process.argv.slice(2));
+  process.stdout.write("\n");
   process.exit();
 }
 
